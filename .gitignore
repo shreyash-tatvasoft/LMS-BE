@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+# npm package lock
+package-lock.json
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+
+# VSCode settings
+.vscode/
