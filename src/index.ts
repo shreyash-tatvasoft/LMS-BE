@@ -30,7 +30,7 @@ app.get("/", (req, res) => {
 });
 
 // Separate function to test DB connection
-const testDBConnection = async () => {
+const dbConnect = async () => {
   try {
     const connection = await db.getConnection();
     console.log("✅ Connected to MySQL on EC2");
@@ -46,5 +46,5 @@ app.use("/api/assigned-books", assignBook)
 
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  await testDBConnection(); // test DB only after server starts
+  // await dbConnect();
 });

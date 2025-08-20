@@ -9,7 +9,7 @@ export async function register(req: Request, res: Response) {
 
     const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
     if ((existing as any[]).length > 0) {
-      return res.status(409).json({ message: "Email already registered" });
+      return res.status(409).json({ success: false, message: "Email already registered" });
     }
 
     const hashed = await hashPassword(password);
@@ -18,10 +18,10 @@ export async function register(req: Request, res: Response) {
       [fullName, email, hashed, dob, role || "STUDENT"]
     );
 
-    return res.status(201).json({ message: "Registered successfully" });
+    return res.status(201).json({ success: true, message: "Registered successfully" });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 }
 
@@ -31,16 +31,16 @@ export async function login(req: Request, res: Response) {
     const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
     const users = rows as any[];
 
-    if (users.length === 0) return res.status(401).json({ message: "Invalid credentials" });
+    if (users.length === 0) return res.status(404).json({ message: "Invalid credentials" });
 
     const user = users[0];
     const ok = await comparePassword(password, user.password);
-    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
+    if (!ok) return res.status(404).json({ message: "Invalid credentials" });
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: "7d" });
-    return res.json({ token, user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role } });
+    return res.json({ success: true , token, user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role } });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 }

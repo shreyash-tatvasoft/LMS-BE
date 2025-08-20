@@ -3,7 +3,7 @@ import { db } from "../config/db";
 
 export async function listBooks(_req: Request, res: Response) {
   const [rows] = await db.query("SELECT * FROM books ORDER BY id DESC");
-  res.json(rows);
+  res.json({ data: rows, success: true});
 }
 
 export async function createBook(req: Request, res: Response) {
@@ -14,7 +14,7 @@ export async function createBook(req: Request, res: Response) {
     quantity,
     author,
   ]);
-  res.status(201).json({ message: "Book created" });
+  res.status(201).json({ success: true, message: "Book created" });
 }
 
 export async function updateBook(req: Request, res: Response) {
@@ -27,11 +27,11 @@ export async function updateBook(req: Request, res: Response) {
     author,
     id,
   ]);
-  res.json({ message: "Book updated" });
+  res.json({ success: true, message: "Book updated" });
 }
 
 export async function deleteBook(req: Request, res: Response) {
   const id = req.params.id;
   await db.query("DELETE FROM books WHERE id=?", [id]);
-  res.json({ message: "Book deleted" });
+  res.json({ success: true, message: "Book deleted" });
 }
