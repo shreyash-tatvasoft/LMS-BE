@@ -37,14 +37,19 @@ app.get("/db-check", async (req, res) => {
       status: "success",
       message: "Successfully connected to MySQL on EC2" 
     });
-  } catch (err) {
-    console.error("DB connection failed on / route:", err);
+  } catch (err: any) {
+    console.error("DB connection failed on /db-check route:");
+    console.error("Error code:", err.code);        // e.g., ECONNREFUSED
+    console.error("Error message:", err.message); // descriptive message
+    console.error("Stack trace:", err.stack);     // full stack trace
     return res.status(500).send({ 
       status: "error",
-      message: "Could not connect to MySQL on EC2" 
+      code: err.code,
+      message: err.message
     });
   }
 });
+
 
 
 // Function to test DB connection
