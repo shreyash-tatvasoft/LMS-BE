@@ -46,5 +46,5 @@ app.use("/api/assigned-books", assignBook)
 
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  // await dbConnect();
+  await dbConnect();
 });
