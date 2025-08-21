@@ -18,7 +18,7 @@ app.use(
     origin: "*",  // your Vite frontend
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "token"],
-    credentials: true, //  allow cookies/auth headers
+    // credentials: true, //  allow cookies/auth headers
   })
 );
 
