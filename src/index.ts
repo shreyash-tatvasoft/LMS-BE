@@ -25,8 +25,10 @@ app.use(
 app.use(express.json());
 
 // sample data
-app.get("/", (req, res) => {
-    return res.send({ "message" : "Welcome to LMS App"})
+app.get("/", async (req, res) => {
+    const connection = await db.getConnection();
+    connection.release();
+    return res.send({ "message" : "Welcome to LMS App that is Connected to MySQL on EC2"})
 });
 
 // Function to test DB connection
