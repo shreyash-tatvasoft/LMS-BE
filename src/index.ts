@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
     return res.send({ "message" : "Welcome to LMS App"})
 });
 
-// Separate function to test DB connection
+// Function to test DB connection
 const dbConnect = async () => {
   try {
     const connection = await db.getConnection();
