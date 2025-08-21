@@ -25,11 +25,27 @@ app.use(
 app.use(express.json());
 
 // sample data
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
+    return res.send({ "message" : "Welcome to LMS App"})
+});
+
+app.get("/db-check", async (req, res) => {
+  try {
     const connection = await db.getConnection();
     connection.release();
-    return res.send({ "message" : "Welcome to LMS App that is Connected to MySQL on EC2"})
+    return res.send({ 
+      status: "success",
+      message: "Successfully connected to MySQL on EC2" 
+    });
+  } catch (err) {
+    console.error("DB connection failed on / route:", err);
+    return res.status(500).send({ 
+      status: "error",
+      message: "Could not connect to MySQL on EC2" 
+    });
+  }
 });
+
 
 // Function to test DB connection
 const dbConnect = async () => {
