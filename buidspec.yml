@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18  
+    commands:
+      - npm install
+  build:
+    commands:
+      - npm run build
+  post_build:
+    commands:
+      - echo "Preparing deployment bundle"
+
+
+artifacts:
+  files:
+    - dist/**/*
+    - scripts/**/*
+    - package.json
+    - appspec.yml
