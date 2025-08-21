@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 8000;
 
 app.use(
   cors({
-    origin: "http://localhost:5173",  // your Vite frontend
+    origin: "*",  // your Vite frontend
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "token"],
     credentials: true, //  allow cookies/auth headers
