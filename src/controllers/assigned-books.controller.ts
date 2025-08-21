@@ -11,7 +11,8 @@ export async function listAssignedBooks(req: AuthRequest, res: Response) {
     return res.status(404).json({success: false, message: "Access denied" });
   }
 
-  const [rows] = await db.query(`
+  const pool = await db;
+  const [rows] = await pool.query(`
     SELECT ab.id, ab.studentId, u.fullName AS studentName, ab.bookId, b.title AS bookTitle, 
            ab.issueDate, ab.returnDate, ab.status
     FROM assignedbooks ab
@@ -27,19 +28,20 @@ export async function listAssignedBooks(req: AuthRequest, res: Response) {
 export async function assignBook(req: AuthRequest, res: Response) {
 
   const { studentId, bookId, issueDate, returnDate } = req.body;
+  const pool = await db;
 
   // Check book exists
-  const [bookRows] = await db.query("SELECT * FROM books WHERE id = ?", [bookId]);
+  const [bookRows] = await pool.query("SELECT * FROM books WHERE id = ?", [bookId]);
   const book = (bookRows as any[])[0];
   if (!book) return res.status(404).json({success: false, message: "Book not found" });
   if (book.quantity <= 0) return res.status(400).json({success: false,  message: "Book is out of stock" });
 
   // Check student exists
-  const [studentRows] = await db.query("SELECT * FROM users WHERE id = ? AND role = 'STUDENT'", [studentId]);
+  const [studentRows] = await pool.query("SELECT * FROM users WHERE id = ? AND role = 'STUDENT'", [studentId]);
   if ((studentRows as any[]).length === 0) return res.status(404).json({success: false, message: "Student not found" });
 
   // Prevent duplicate active assignment
-  const [existingRows] = await db.query(
+  const [existingRows] = await pool.query(
     "SELECT * FROM assignedbooks WHERE studentId = ? AND bookId = ? AND status = 'ISSUED'",
     [studentId, bookId]
   );
@@ -48,11 +50,11 @@ export async function assignBook(req: AuthRequest, res: Response) {
   }
 
   // Assign book
-  await db.query(
+  await pool.query(
     "INSERT INTO assignedbooks (studentId, bookId, issueDate, returnDate, status) VALUES (?, ?, ?, ?, 'ISSUED')",
     [studentId, bookId, issueDate, returnDate]
   );
-  await db.query("UPDATE books SET quantity = quantity - 1 WHERE id = ?", [bookId]);
+  await pool.query("UPDATE books SET quantity = quantity - 1 WHERE id = ?", [bookId]);
 
   res.status(201).json({ success: true, message: "Book assigned to student" });
 }
@@ -61,7 +63,8 @@ export async function assignBook(req: AuthRequest, res: Response) {
 export async function returnBook(req: AuthRequest, res: Response) {
   const id = req.params.id;
 
-  const [rows] = await db.query("SELECT * FROM assignedbooks WHERE id = ?", [id]);
+  const pool = await db;
+  const [rows] = await pool.query("SELECT * FROM assignedbooks WHERE id = ?", [id]);
   const assignment = (rows as any[])[0];
   if (!assignment) return res.status(404).json({ success: false, message: "Assigned book not found" });
 
@@ -70,8 +73,8 @@ export async function returnBook(req: AuthRequest, res: Response) {
   }
 
   // Update status to RETURNED
-  await db.query("UPDATE assignedbooks SET status = 'RETURNED', returnedAt = CURDATE() WHERE id = ?", [id]);
-  await db.query("UPDATE books SET quantity = quantity + 1 WHERE id = ?", [assignment.bookId]);
+  await pool.query("UPDATE assignedbooks SET status = 'RETURNED', returnedAt = CURDATE() WHERE id = ?", [id]);
+  await pool.query("UPDATE books SET quantity = quantity + 1 WHERE id = ?", [assignment.bookId]);
 
   res.status(200).json({ success: true, message: "Book marked as returned" });
 }
@@ -83,8 +86,9 @@ export async function getMyAssignedBooks(req: AuthRequest, res: Response) {
   }
 
   const studentId = req.user.id;
+  const pool = await db;
 
-  const [rows] = await db.query(`
+  const [rows] = await pool.query(`
     SELECT ab.id, ab.bookId, b.title AS bookTitle, ab.issueDate, ab.returnDate, ab.status, ab.returnedAt
     FROM assignedbooks ab
     JOIN books b ON ab.bookId = b.id
@@ -97,6 +101,7 @@ export async function getMyAssignedBooks(req: AuthRequest, res: Response) {
 
 // Admin: Get all students (for dropdown)
 export async function getStudents(_req: AuthRequest, res: Response) {
-  const [rows] = await db.query("SELECT id, fullName, email FROM users WHERE role = 'STUDENT' ORDER BY fullName ASC");
+  const pool = await db;
+  const [rows] = await pool.query("SELECT id, fullName, email FROM users WHERE role = 'STUDENT' ORDER BY fullName ASC");
   res.status(200).json({success: true, data: rows});
 }

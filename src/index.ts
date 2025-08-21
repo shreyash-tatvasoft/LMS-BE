@@ -31,7 +31,8 @@ app.get("/", (req, res) => {
 
 app.get("/db-check", async (req, res) => {
   try {
-    const connection = await db.getConnection();
+    const pool = await db;
+    const connection = await pool.getConnection();
     connection.release();
     return res.send({ 
       status: "success",
@@ -55,7 +56,8 @@ app.get("/db-check", async (req, res) => {
 // Function to test DB connection
 const dbConnect = async () => {
   try {
-    const connection = await db.getConnection();
+    const pool = await db;
+    const connection = await pool.getConnection();
     console.log("✅ Connected to MySQL on EC2");
     connection.release();
   } catch (err) {

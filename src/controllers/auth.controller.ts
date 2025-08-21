@@ -7,13 +7,14 @@ export async function register(req: Request, res: Response) {
   try {
     const { fullName, email, password, dob, role } = req.body;
 
-    const [existing] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const pool = await db;
+    const [existing] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
     if ((existing as any[]).length > 0) {
       return res.status(409).json({ success: false, message: "Email already registered" });
     }
 
     const hashed = await hashPassword(password);
-    await db.query(
+    await pool.query(
       "INSERT INTO users (fullName, email, password, dob, role) VALUES (?, ?, ?, ?, ?)",
       [fullName, email, hashed, dob, role || "STUDENT"]
     );
@@ -28,7 +29,8 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
-    const [rows] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
+    const pool = await db;
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
     const users = rows as any[];
 
     if (users.length === 0) return res.status(404).json({ message: "Invalid credentials" });
