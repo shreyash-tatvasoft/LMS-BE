@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { getJWTSecret } from "../utils/helper";
 
 dotenv.config();
 
@@ -9,12 +10,13 @@ export interface JwtPayload {
   role: "ADMIN" | "STUDENT";
 }
 
-export function auth(req: Request, res: Response, next: NextFunction) {
+export async function auth(req: Request, res: Response, next: NextFunction) {
   const token = req.headers["token"] as string;
   if (!token) return res.status(401).json({ message: "Invalid token" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const jwtSecret = await getJWTSecret();
+    const decoded = jwt.verify(token, jwtSecret!) as JwtPayload;
     (req as any).user = decoded;
     next();
   } catch (err) {

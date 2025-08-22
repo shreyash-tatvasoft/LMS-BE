@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { db } from "../config/db";
-import { hashPassword, comparePassword } from "../utils/password";
+import { hashPassword, comparePassword, getJWTSecret } from "../utils/helper";
 import jwt from "jsonwebtoken";
 
 export async function register(req: Request, res: Response) {
@@ -39,7 +39,8 @@ export async function login(req: Request, res: Response) {
     const ok = await comparePassword(password, user.password);
     if (!ok) return res.status(404).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+    const jwtSecret = await getJWTSecret();
+    const token = jwt.sign({ id: user.id, role: user.role }, jwtSecret!, { expiresIn: "7d" });
     return res.json({ success: true , token, user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role } });
   } catch (e) {
     console.error(e);
