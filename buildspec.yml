@@ -1,12 +1,5 @@
 version: 0.2
 
-env:
-  variables:
-    DB_HOST: "DB_HOST"   # Your DB EC2 public IP
-    DB_USER: "DB_PASS"
-    DB_PASS: "DB_PASS"
-    DB_NAME: "DB_NAME"
-    JWT_SECRET: "JWT_SECRET"
 
 phases:
   install:
@@ -26,5 +19,6 @@ artifacts:
   files:
     - dist/**/*
     - scripts/**/*
+    - migrations/**/*
     - package.json
     - appspec.yml
