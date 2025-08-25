@@ -2,7 +2,7 @@
 set -e
 
 echo "🔹 Installing MariaDB (MySQL) client..."
-sudo yum install -y mariadb
+sudo yum install -y mariadb105
 
 DB_HOST=$(aws ssm get-parameter --name "/myapp/DB_HOST" --with-decryption --query "Parameter.Value" --output text --region ap-south-1)
 DB_USER=$(aws ssm get-parameter --name "/myapp/DB_USER" --with-decryption --query "Parameter.Value" --output text --region ap-south-1)
