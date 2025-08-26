@@ -36,7 +36,7 @@ app.get("/db-check", async (req, res) => {
     connection.release();
     return res.send({ 
       status: "success",
-      message: "Successfully connected to MySQL on EC2" 
+      message: "Successfully connected to Database" 
     });
   } catch (err: any) {
     console.error("DB connection failed on /db-check route:");
@@ -58,10 +58,10 @@ const dbConnect = async () => {
   try {
     const pool = await db;
     const connection = await pool.getConnection();
-    console.log("✅ Connected to MySQL on EC2");
+    console.log("Connected to Database");
     connection.release();
   } catch (err) {
-    console.error("❌ DB connection failed:", err);
+    console.error("DB connection failed:", err);
   }
 };
 
