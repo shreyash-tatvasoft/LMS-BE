@@ -8,7 +8,6 @@ const logger = createLogger({
   ),
   transports: [
     new transports.File({ filename: '/var/log/backend.log', level: 'info' }),
-    new transports.File({ filename: '/var/log/backend-error.log', level: 'error' }),
     new transports.Console()
   ],
 });

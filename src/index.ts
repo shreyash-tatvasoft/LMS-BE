@@ -6,7 +6,6 @@ import assignBook from "./routes/assigned-books.routes"
 import cors from "cors"
 import { db } from "./config/db";
 import logger from './utils/logger';
-import { Request, Response, NextFunction } from "express"
 
 dotenv.config();
 
@@ -31,18 +30,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-// Error-handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  logger.error({
-    message: err.message,
-    stack: err.stack,
-    method: req.method,
-    url: req.originalUrl,
-    timestamp: new Date().toISOString(),
-  });
-  res.status(500).send('Internal Server Error');
-});
 
 app.use(
   cors({
