@@ -5,13 +5,44 @@ import bookRoutes from "./routes/book.routes";
 import assignBook from "./routes/assigned-books.routes"
 import cors from "cors"
 import { db } from "./config/db";
+import logger from './utils/logger';
+import { Request, Response, NextFunction } from "express"
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// app.use(cors())
+// Middleware to log every request
+app.use((req, res, next) => {
+  const start = Date.now();
+
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logger.info({
+      method: req.method,
+      url: req.originalUrl,
+      status: res.statusCode,
+      duration_ms: duration,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  next();
+});
+
+
+// Error-handling middleware
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    method: req.method,
+    url: req.originalUrl,
+    timestamp: new Date().toISOString(),
+  });
+  res.status(500).send('Internal Server Error');
+});
 
 app.use(
   cors({
@@ -26,6 +57,7 @@ app.use(express.json());
 
 // sample data
 app.get("/", (req, res) => {
+    logger.info("Index API Logs....")
     return res.send({ "message" : "Welcome to LMS App"})
 });
 
