@@ -1,8 +1,8 @@
 // For Railway Setup Only
 
-import mysql from "mysql2/promise";
-import fs from "fs";
-import path from "path";
+const mysql = require("mysql2/promise");
+const fs = require("fs");
+const path = require("path");
 
 async function runMigration() {
   try {
