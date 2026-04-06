@@ -2,6 +2,7 @@
 
 import mysql from "mysql2/promise";
 import fs from "fs";
+import path from "path";
 
 async function runMigration() {
   try {
@@ -15,8 +16,12 @@ async function runMigration() {
       multipleStatements: true
     });
 
-    console.log("🔹 Reading schema.sql...");
-    const sql = fs.readFileSync("./migrations/schema.sql", "utf-8");
+    // FIX: absolute path using process.cwd()
+    const filePath = path.join(process.cwd(), "migrations", "schema.sql");
+
+    console.log("🔹 Reading schema.sql from:", filePath);
+
+    const sql = fs.readFileSync(filePath, "utf-8");
 
     console.log("🔹 Running migrations...");
     await connection.query(sql);
